@@ -9,11 +9,8 @@ dotenv.config();
 const app=express();
 const PORT=process.env.PORT || 8000;
 //middlewares
-const corsOptions = {
-    origin: "http://localhost:3000" // frontend URI (ReactJS)
-}
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 app.use("/",router);
