@@ -8,7 +8,7 @@ function TodoForm() {
        setText(e.target.value);
     }
     const onSubmitForm=(e)=>{
-        // e.preventDefault();
+        e.preventDefault();
         dispatch(addNewTodo(text))
         setText("");
     }

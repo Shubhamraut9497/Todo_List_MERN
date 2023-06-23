@@ -2,11 +2,18 @@ import express from 'express';
 import connect from './connect/connect.js';
 import cors from  "cors";
 import router from './router/router.js'
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app=express();
-const PORT=8000;
+const PORT=process.env.PORT || 8000;
 //middlewares
-app.use(cors());
+const corsOptions = {
+    origin: "http://localhost:3000" // frontend URI (ReactJS)
+}
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/",router);
