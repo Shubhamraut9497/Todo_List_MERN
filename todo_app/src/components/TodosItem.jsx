@@ -1,24 +1,58 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { getAllTodos } from '../action/index';
-import Todo from './Todo';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTodos,deleteTodo } from "../action/index";
+import Todo from "./Todo";
+import Tabs from "./Tabs";
+import { ACTIVE_TODOS, ALL_TODOS, DONE_TODOS } from "../action/type";
 
 function TodosItem() {
-    const dispatch = useDispatch();
-    const todos = useSelector((state) => state.todo)
-    console.log(todos);
-    useEffect(() => {
-        dispatch(getAllTodos());
-    }, [dispatch])
-    return (
-        <>
-            <ul>
-                {todos && todos.map((todo) => {
-                    return <Todo key={todo._id} todo={todo} id={todo._id} />
-                })}
-            </ul>
-        </>
-    )
+  const dispatch = useDispatch();
+  const todos = useSelector((state) => state.todo);
+  const currentTab = useSelector(state => state.currentTab);
+
+  useEffect(() => {
+    dispatch(getAllTodos());
+  }, [dispatch]);
+   
+  const getTodos=()=>{
+    if(currentTab===ALL_TODOS){
+        return todos;
+    }else if(currentTab===ACTIVE_TODOS){
+        return todos.filter(todo=>!todo.done);
+    }
+    else if(currentTab===DONE_TODOS){
+        return todos.filter(todo=>todo.done);
+    }
+  }
+  const removeDoneTodos = () => {
+    todos.forEach(({ done, _id }) => {
+        if (done) {
+            dispatch(deleteTodo(_id));
+        }
+    })
 }
 
-export default TodosItem
+  return (
+    <article>
+      <div>
+        <Tabs currentTab={currentTab} />
+        {
+                    todos.some(todo => todo.done) ? (
+                        <button
+                            onClick={removeDoneTodos}
+                            className="button clear"
+                        >Remove Done Todos</button>
+                    ) : null    
+                }
+      </div>
+      <ul>
+        {getTodos() &&
+          getTodos().map((todo) => {
+            return <Todo key={todo._id} todo={todo} id={todo._id} />;
+          })}
+      </ul>
+    </article>
+  );
+}
+
+export default TodosItem;

@@ -12,29 +12,52 @@ const todo = async (req, res) => {
     console.log(err);
   }
 };
- const getAllTodos = async (request, response) => {
+const getAllTodos = async (request, response) => {
   try {
-      const todos = await todoSchema.find({}).sort({ 'createdAt': -1 })
+    const todos = await todoSchema.find({}).sort({ createdAt: -1 });
 
-      return response.status(200).json(todos);
+    return response.status(200).json(todos);
   } catch (error) {
-      return response.status(500).json(error.message);
+    return response.status(500).json(error.message);
   }
-}
- const toggleTodoDone = async (request, response) => {
+};
+const toggleTodoDone = async (request, response) => {
   try {
-      const todoRef = await todoSchema.findById(request.params.id);
+    const todoRef = await todoSchema.findById(request.params.id);
 
-      const todo = await todoSchema.findOneAndUpdate(
-          {_id:request.params.id,},
-          { done: !todoRef.done }
+    const todo = await todoSchema.findOneAndUpdate(
+      { _id: request.params.id },
+      { done: !todoRef.done }
+    );
+
+    await todo.save();
+
+    return response.status(200).json(todo);
+  } catch (error) {
+    return response.status(500).json(error.message);
+  }
+};
+ const updateTodo = async (request, response) => {
+  try {
+    console.log(request.body.data);
+      await todoSchema.findOneAndUpdate(
+          { _id: request.params.id },
+          { item : request.body.data }
       )
 
-      await todo.save();
+      const todo = await todoSchema.findById(request.params.id);
 
       return response.status(200).json(todo);
   } catch (error) {
       return response.status(500).json(error.message);
   }
 }
-export { todo, getAllTodos,toggleTodoDone };
+const deleteTodo = async (request, response) => {
+  try {
+      const todo=await todoSchema.findByIdAndDelete(request.params.id)
+      return response.status(200).json(todo);
+  } catch (error) {
+      return response.status(500).json(error.message);
+  }
+}
+export { todo, getAllTodos, toggleTodoDone, updateTodo,deleteTodo };
